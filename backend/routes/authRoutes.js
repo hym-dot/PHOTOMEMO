@@ -3,7 +3,7 @@ const router = express.Router()
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const User = require("../models/User")
-
+const auth = require('../middlewares/auth')
 
 function makeToken(user) {
     return jwt.sign(
@@ -142,9 +142,9 @@ router.post("/login", async (req, res) => {
         return res.status(200).json({
             user: user.toSafeJSON(),
             token,
-            loginAttempts:0,
-            remainingAttempts:LOCK_MAX,
-            locked:false
+            loginAttempts: 0,
+            remainingAttempts: LOCK_MAX,
+            locked: false
         })
 
     } catch (error) {
@@ -155,26 +155,58 @@ router.post("/login", async (req, res) => {
     }
 })
 
+router.use(auth)
+
+
 router.get("/me", async (req, res) => {
     try {
-        const h = req.headers.authorization || ""
+        const me = await User.findById(req.user.id)
 
-        const token = h.startsWith("Bearer") ? h.slice(7) : null
+        if (!me) return res.status(404).json({ message: "사용자 없음" })
 
-        if (!token) return res.status(401).json({ message: "인증 필요" })
-
-        const payload = jwt.verify(token, process.env.JWT_SECRET)
-
-        const user = await User.findById(payload.id)
-
-        if (!user) return res.status(404).json({ message: "사용자 없음" })
-
-        res.status(200).json(user.toSafeJSON())
+        return res.status(200).json(me.toSafeJSON())
 
     } catch (error) {
 
-        res.status(401).json({ message: "토큰 무효", error: error.message })
+        res.status(401).json({ message: "조회 실패", error: error.message })
+    }
+})
 
+router.get("/users", async (req, res) => {
+    try {
+        const me = await User.findById(req.user.id)
+        if (!me) return res.status(404).json({ message: '사용자 없음' })
+
+
+        if (me.role !== 'admin') {
+            return res.status(403).json({ message: '권한 없음' })
+        }
+        const users = await User.find().select('-passwordHash')
+
+        return res.status(200).json({ users })
+    } catch (error) {
+        res.status(401).json({ message: "조회 실패", error: error.message })
+
+    }
+})
+
+router.post("/logout", async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: { isLoggined: false }, },
+            { new: true }
+        )
+
+        res.clearCookie('token',{
+            httpOnly: true,
+            sameSite: "lax",
+            secure: "production",
+        })
+        return res.status(200).json({message:'로그아웃 성공'})
+    } catch (error) {
+
+        return res.status(500).json({message:'로그아웃 실패',error:error.message})
     }
 })
 
