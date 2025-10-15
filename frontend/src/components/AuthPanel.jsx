@@ -1,25 +1,37 @@
-import React from 'react'
-import './style/AuthPanel.scss'
-import AuthModal from "./AuthModal"
-const AuthPanel = () => {
+import React from "react";
+import "./style/AuthPanel.scss";
+import AuthModal from "./AuthModal";
+const AuthPanel = ({
+  isAuthed,
+  user,
+  me,
+  onFetchMe,
+  onLogout,
+  onAuthed,
+  requiredRole
+}) => {
+
+  const [open, setOpen]=useState(false)
+
+  const hasRequiredRole = 
+
   return (
-    <section className='container-sm admin-card'>
-      <header className='admin-head'>
-        <h1 className='title'>관리자 인증</h1>
+    <section className="container-sm admin-card">
+      <header className="admin-head">
+        <h1 className="title">관리자 인증</h1>
         <p>
           버튼 → 모달에서 로그인/회원가입 → 토큰 저장 → /me 호출
-        </p>
+          </p>
       </header>
       {/* 로그인 전 */}
       <div className="auth-row">
-        <button className="btn btn-primary">
-          로그인 / 회원가입
-        </button>
-
+        <button className="btn btn-primary">로그인 / 회원가입</button>
       </div>
       {/* 로그인 후 */}
       <div className="auth-row">
-        <span>안녕하세요 <b>사용자 명 또는 이메일</b> </span>
+        <span>
+          안녕하세요 <b>사용자 명 또는 이메일</b>{" "}
+        </span>
         <span className="badge badge-ok">admin</span>
 
         <div className="auth-actions">
@@ -39,12 +51,13 @@ const AuthPanel = () => {
       "id": "123",
       "email": "test@example.com",
       "role": "admin"
-       }`}  
+        }`}
       </pre>
 
-      <AuthModal/>
+      <AuthModal
+      open={open} />
     </section>
-  )
-}
+  );
+};
 
-export default AuthPanel
+export default AuthPanel;
