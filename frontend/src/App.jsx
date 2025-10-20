@@ -1,7 +1,7 @@
 
 import './App.scss'
 import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route,Navigate } from 'react-router-dom'
 import AuthPanel from './components/AuthPanel'
 import Landing from './pages/Landing'
 import api from "./api/client"
@@ -16,7 +16,8 @@ function App() {
   const [me, setMe] = useState(null)
   const isAuthed = !!token
 
-  const handleAuthed = ({user, token }) => {
+
+  const handleAuthed = ({ user, token }) => {
     setUser(user)
     setToken(token)
 
@@ -33,7 +34,7 @@ function App() {
     localStorage.removeItem('token')
   }
 
-    const fetchMe = async () => {
+  const fetchMe = async () => {
     try {
       const { data } = await api.get('/api/auth/me')
       setMe(data)
@@ -43,11 +44,24 @@ function App() {
     }
   }
 
+
   return (
     <div className='page'>
       <Routes>
         <Route path='/' element={<Landing />} />
-        <Route path='/admin/login' element={<AuthPanel />} />
+        <Route
+          path='/admin/login'
+          element={<AuthPanel
+            isAuthed={isAuthed}
+            user={user}
+            me={me}
+            onFetchMe ={fetchMe}
+            onLogout={logout}
+            onAuthed={handleAuthed}
+            requiredRole="admin"
+          />}
+        />
+        <Route path='*' element={<Navigate to="/" replace />}/>
       </Routes>
     </div>
   )
