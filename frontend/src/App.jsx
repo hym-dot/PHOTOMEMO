@@ -1,3 +1,4 @@
+
 import './App.scss'
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
@@ -5,15 +6,14 @@ import AuthPanel from './components/AuthPanel'
 import Landing from './pages/Landing'
 import Header from './components/Header'
 import ProtectRoute from './components/ProtectRoute'
-import UserDashboard from './pages/user/UserDashboard'
-import AdminDashboard from './pages/admin/AdminDashboard'
+import UserDashboard from './pages/user/userDashboard'
+import AdminDashboard from './pages/admin/adminDashboard'
 import {
   fetchMe as apiFetchMe,
   logout as apiLogout,
   saveAuthToStorage,
   clearAuthStorage
 } from "./api/client"
-
 function App() {
 
   const [user, setUser] = useState(() => {
@@ -21,12 +21,15 @@ function App() {
     return raw ? JSON.parse(raw) : null
   })
 
-  const hideOn = new Set(['/','/admin/login'])
-  const showHeader = isAuthed && !hideOn.has(location.pathname)
+
 
   const [token, setToken] = useState(() => localStorage.getItem('token'))
   const [me, setMe] = useState(null)
   const isAuthed = !!token
+
+
+  const hideOn = new Set(['/','/admin/login'])
+  const showHeader = isAuthed && !hideOn.has(location.pathname)
 
 
   const handleAuthed = async ({ user, token }) => {
@@ -46,6 +49,7 @@ function App() {
     try {
       await apiLogout()
     } catch (error) {
+      console.error('로그아웃 API 호출 실패:', error)
 
     } finally {
       setUser(null)
@@ -73,6 +77,12 @@ function App() {
 
   return (
     <div className='page'>
+      {showHeader && <Header
+      isAuthed={isAuthed}
+      user={user}
+      onLogout={handleLogout}
+      />}
+
       <Routes>
         <Route path='/' element={<Landing />} />
         {/* 로그인 회원가입 */}

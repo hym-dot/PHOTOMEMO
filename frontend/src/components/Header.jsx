@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { useNavigate ,NavLink,Link } from 'react-router-dom'
+import { useNavigate, NavLink, Link } from 'react-router-dom'
+import "./style/Header.scss"
 const Header = ({
     isAuthed,
     user,
@@ -8,34 +9,38 @@ const Header = ({
 }) => {
 
     const navigate = useNavigate()
-    const handleLogout=async()=>{
-        if(!window.confirm('정말 로그아웃 하시겠어요?')) return
+    const handleLogout = async () => {
+        if (!window.confirm('정말 로그아웃 하시겠어요?')) return
 
         try {
             await onLogout()
+            navigate('/')
         } catch (error) {
-            
+          console.error('로그아웃 중 오류 발생:', error) 
+    alert('로그아웃에 실패했습니다.')
+
         }
     }
 
-  return (
-    <header className='site-header'>
-      <div className="inner">
-        <h1 className='logo'>
-          Photomemo
-        </h1>
-        <div className="auth-area">
-          {isAuthed?(
-            <span className='welcome'>{user?.displayName  }</span>
-            <></>
-          ):(<Link className='btn login' to='/admin/login'>
-            
-          </Link>)}
-        </div>
-      </div>
-        <button className='btn logout' onClick={handleLogout}>로그아웃</button>
-    </header>
-  )
+    return (
+        <header className='site-header'>
+            <div className="inner">
+                <h1 className='logo'>
+                    📷Photomemo
+                </h1>
+                <div className="auth-area">
+                    {isAuthed && (
+                        <div>
+                            <span className='welcome'>
+                                {user?.displayName || user?.email || "user"}
+                            </span>
+                            <button className='btn logout' onClick={handleLogout}>로그아웃</button>
+                        </div>
+                    ) }
+                </div>
+            </div>
+        </header>
+    )
 }
 
 export default Header

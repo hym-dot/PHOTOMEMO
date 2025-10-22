@@ -1,7 +1,9 @@
 import React from 'react'
-
-export const UploadForm = () => {
+import "./style/UploadForm.scss"
+const UploadForm = () => {
   return (
     <div>UploadForm</div>
   )
 }
+
+export default UploadForm

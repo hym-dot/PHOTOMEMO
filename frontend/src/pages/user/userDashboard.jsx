@@ -1,8 +1,12 @@
 import React from 'react'
-
+import FileList from './FileList'
+import UploadForm from './UploadForm'
 const UserDashboard = () => {
   return (
-    <div>userDashboard</div>
+    <section>
+        <UploadForm/>
+        <FileList/>
+    </section>
   )
 }
 
