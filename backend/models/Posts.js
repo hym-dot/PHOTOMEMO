@@ -3,6 +3,11 @@ const mongoose =require('mongoose')
 
 const postSchema = new mongoose.Schema(
     {
+        user:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'User',
+            required:true
+        },
         number :{
             type:Number,
             required:true
@@ -45,6 +50,7 @@ const postSchema = new mongoose.Schema(
         timestamps:true
     }
 )
+postSchema.index({ user: 1, number: 1 }, { unique: true });
 
 const Post = mongoose.model("Post",postSchema)
 
