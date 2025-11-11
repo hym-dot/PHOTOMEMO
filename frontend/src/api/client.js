@@ -17,15 +17,15 @@ api.interceptors.request.use(
 
         return config
     }
-  
+
 )
 
 api.interceptors.response.use(
-    (res)=>res,
-    (err)=>{
-        const code =err?.response?.status
+    (res) => res,
+    (err) => {
+        const code = err?.response?.status
 
-        if(code==401 || code==403){
+        if (code == 401 || code == 403) {
             localStorage.removeItem('token')
             localStorage.removeItem('user')
         }
@@ -33,13 +33,13 @@ api.interceptors.response.use(
     }
 )
 
-export function getErrorMessage(error, fallback='요청 실패'){
+export function getErrorMessage(error, fallback = '요청 실패') {
     return error.response?.data?.message || error.message || fallback
 }
 
-export async function register({email, password, displayname}){
+export async function register({ email, password, displayname }) {
 
-    const {data}=await api.post('/api/auth/register',{
+    const { data } = await api.post('/api/auth/register', {
         email,
         password,
         displayname
@@ -48,34 +48,34 @@ export async function register({email, password, displayname}){
     return data
 
 }
-export async function login({email, password}){
+export async function login({ email, password }) {
 
-    const {data}=await api.post('/api/auth/login',{
+    const { data } = await api.post('/api/auth/login', {
         email,
         password,
     })
     return data
 
 }
-export async function fetchMe(){
-    const {data}=await api.get('/api/auth/me')
+export async function fetchMe() {
+    const { data } = await api.get('/api/auth/me')
 
     return data
 }
 
-export async function logout(){
+export async function logout() {
     return await api.post('/api/auth/logout')
 }
 
 
-export function saveAuthToStorage({user,token}){
+export function saveAuthToStorage({ user, token }) {
 
-    if(user) localStorage.setItem('user',JSON.stringify(user))
-    if(token) localStorage.setItem('token',token)
+    if (user) localStorage.setItem('user', JSON.stringify(user))
+    if (token) localStorage.setItem('token', token)
 
 }
 
-export function clearAuthStorage(){
+export function clearAuthStorage() {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
 }
